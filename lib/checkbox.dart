@@ -34,6 +34,7 @@ class _CheckBoxState extends State<CircleCheckBox>
       vsync: this,
       duration: Duration(milliseconds: widget.duration),
     );
+
     animation = Tween<double>(begin: 14, end: 0).animate(animationController);
     iconAnimation =
         Tween<double>(begin: 0, end: 2).animate(animationController);
@@ -51,6 +52,9 @@ class _CheckBoxState extends State<CircleCheckBox>
       animationController.reverse();
     }
     if (widget.groupValue == '') {}
+    animationController.addListener(() {
+      print(animationController.value);
+    });
     animationController.duration = Duration(milliseconds: widget.duration);
   }
 
@@ -63,6 +67,7 @@ class _CheckBoxState extends State<CircleCheckBox>
   @override
   Widget build(BuildContext context) {
     checkValue();
+
     return InkWell(
       borderRadius: BorderRadius.circular(100),
       onTap: () {
@@ -72,23 +77,14 @@ class _CheckBoxState extends State<CircleCheckBox>
         animation: animation,
         builder: (context, animWidget) => CustomPaint(
           child: SizedBox(
-              height: 30,
-              width: 30,
-              child: FadeTransition(
-                opacity: iconAnimation,
-                child: ScaleTransition(
-                  scale: iconAnimation,
-                  child: Icon(
-                    Icons.check,
-                    color: widget.tickColor,
-                    size: 10,
-                  ),
-                ),
-              )),
+            height: 30,
+            width: 30,
+          ),
           painter: _RoundCheckBoxPainter(
             outlineColor: widget.outlineColor,
             fillColor: widget.fillColor,
             radius: animation.value,
+            animValue: animationController.value,
           ),
         ),
       ),
@@ -100,11 +96,14 @@ class _RoundCheckBoxPainter extends CustomPainter {
   final Color outlineColor;
   final double radius;
   final Color fillColor;
+  final double animValue;
 
-  _RoundCheckBoxPainter(
-      {required this.outlineColor,
-      required this.radius,
-      required this.fillColor});
+  _RoundCheckBoxPainter({
+    required this.outlineColor,
+    required this.radius,
+    required this.fillColor,
+    required this.animValue,
+  });
   @override
   void paint(Canvas canvas, Size size) {
     var bigCircle = Paint()
@@ -116,10 +115,25 @@ class _RoundCheckBoxPainter extends CustomPainter {
       ..color = fillColor
       ..style = PaintingStyle.fill;
 
+    var iconPaint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
     Offset center = Offset(15, 15);
+    Offset centerForIcon = Offset(13, 19);
 
     canvas.drawCircle(center, 15, bigCircle);
     canvas.drawCircle(center, radius, smallCircle);
+    var path1 = Path();
+
+    Offset startPoint = Offset(centerForIcon.dx - 3.5, centerForIcon.dy - 3.5);
+    path1.moveTo(startPoint.dx, startPoint.dy);
+    path1.lineTo(centerForIcon.dx * animValue, centerForIcon.dy * animValue);
+    path1.lineTo(centerForIcon.dx + 8, centerForIcon.dy - 8);
+    //path1.close();
+    canvas.drawPath(path1, iconPaint);
   }
 
   @override
