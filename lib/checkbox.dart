@@ -67,7 +67,6 @@ class _CheckBoxState extends State<CircleCheckBox>
   @override
   Widget build(BuildContext context) {
     checkValue();
-
     return InkWell(
       borderRadius: BorderRadius.circular(100),
       onTap: () {
@@ -117,7 +116,7 @@ class _RoundCheckBoxPainter extends CustomPainter {
 
     var iconPaint = Paint()
       ..color = Colors.white
-      ..strokeWidth = 1.5
+      ..strokeWidth = 2 * animValue
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
@@ -130,7 +129,7 @@ class _RoundCheckBoxPainter extends CustomPainter {
 
     Offset startPoint = Offset(centerForIcon.dx - 3.5, centerForIcon.dy - 3.5);
     path1.moveTo(startPoint.dx, startPoint.dy);
-    path1.lineTo(centerForIcon.dx * animValue, centerForIcon.dy * animValue);
+    path1.lineTo(centerForIcon.dx, centerForIcon.dy);
     path1.lineTo(centerForIcon.dx + 8, centerForIcon.dy - 8);
     //path1.close();
     canvas.drawPath(path1, iconPaint);
